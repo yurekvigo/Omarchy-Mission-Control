@@ -127,7 +127,14 @@ Item {
            + 'hl.gesture({ fingers = 4, direction = "up", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' open") end }); '
            + 'hl.gesture({ fingers = 4, direction = "down", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' close") end }); '
     cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control$" }, blur = true, ignore_alpha = 0.3 })'
-    Quickshell.execDetached(["hyprctl", "eval", cmd])
+    hyprEval(cmd)
+  }
+  // Runs Lua in Hyprland. Clearing a swipe that isn't set makes Hyprland note
+  // a "config error" even inside pcall, and it keeps the last eval's errors,
+  // so a harmless eval follows to leave the error list clean.
+  function hyprEval(cmd) {
+    Quickshell.execDetached(["sh", "-c",
+      'hyprctl eval "$1" >/dev/null 2>&1; hyprctl eval "return 1" >/dev/null 2>&1', "sh", cmd])
   }
   Connections {
     target: Hyprland
@@ -544,7 +551,7 @@ Item {
     // (mode "cards" with the relay: no Hyprland gesture at all; the relay's
     // movement scrolls the row.)
     swipeWasSwapped = true
-    Quickshell.execDetached(["hyprctl", "eval", cmd])
+    hyprEval(cmd)
   }
 
   // Pointer over the row of cards (on) or not (off).

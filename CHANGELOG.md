@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Setting up the shortcut and swipes no longer leaves a "config error" entry
+  in Hyprland when a swipe it clears wasn't set.
+
 ## 1.0.0
 
 First release.
