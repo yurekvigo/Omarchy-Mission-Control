@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="#16161e"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#2a2b3d" stroke-width="6"/>
+  <!-- workspace cards -->
+  <rect x="76" y="88" width="76" height="50" rx="8" fill="#a6d16b"/>
+  <rect x="166" y="88" width="76" height="50" rx="8" fill="none" stroke="#c0caf5" stroke-width="8"/>
+  <rect x="256" y="88" width="76" height="50" rx="8" fill="none" stroke="#c0caf5" stroke-width="8"/>
+  <rect x="346" y="88" width="76" height="50" rx="8" fill="none" stroke="#565f89" stroke-width="8"/>
+  <!-- spread windows -->
+  <rect x="76" y="196" width="168" height="120" rx="12" fill="#c0caf5"/>
+  <rect x="76" y="196" width="168" height="22" rx="10" fill="#7aa2f7"/>
+  <rect x="268" y="196" width="168" height="120" rx="12" fill="#c0caf5"/>
+  <rect x="268" y="196" width="168" height="22" rx="10" fill="#7aa2f7"/>
+  <rect x="172" y="336" width="168" height="104" rx="12" fill="#c0caf5"/>
+  <rect x="172" y="336" width="168" height="22" rx="10" fill="#a6d16b"/>
+</svg>

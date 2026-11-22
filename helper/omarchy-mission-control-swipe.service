@@ -1,0 +1,31 @@
+[Unit]
+Description=Swipe helper for Omarchy Mission Control (three/four-finger swipe movement only)
+
+[Service]
+ExecStart=/usr/local/bin/omarchy-mission-control-swipe
+Restart=always
+RestartSec=2
+RuntimeDirectory=omarchy-mission-control
+RuntimeDirectoryMode=0755
+# Locked down: it only needs to read input devices and write its socket.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/run/omarchy-mission-control
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+DeviceAllow=char-input rw
+
+[Install]
+WantedBy=multi-user.target
