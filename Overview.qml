@@ -33,6 +33,9 @@ Item {
   property int shownUpTo: 0
 
   property color background: Commons.Color.menu.background
+  // The theme's base colours, for the backdrop and the text drawn on it.
+  readonly property color themeBackground: Commons.Color.background
+  readonly property color themeForeground: Commons.Color.foreground
   property color foreground: Commons.Color.menu.text
   property color border: Commons.Color.menu.border
   property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
@@ -1064,10 +1067,12 @@ Item {
       id: overlay
       anchors.fill: parent
 
-      // Dimmed desktop.
+      // The desktop behind, blurred and tinted with the theme's own
+      // background colour (light in a light theme, dark in a dark one), so
+      // you can still tell which theme you are in.
       Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.55)
+        color: Qt.alpha(root.themeBackground, 0.45)
       }
       // Clicks on empty space do nothing; close with Esc, the shortcut or
       // four fingers down.
@@ -1542,7 +1547,7 @@ Item {
           visible: bigArea.n === 0
           textFormat: Text.PlainText
           text: "No windows on this workspace"
-          color: "#ffffff"
+          color: root.themeForeground
           opacity: 0.8
           font.family: root.fontFamily
           font.pixelSize: Math.round(Style.font.body * 1.4)
@@ -1605,9 +1610,9 @@ Item {
           anchors.centerIn: parent
           textFormat: Text.PlainText
           text: "\uf013"
-          color: gearMouse.containsMouse || root.settingsPage !== "" ? root.selectedText : "#ffffff"
+          color: gearMouse.containsMouse || root.settingsPage !== "" ? root.selectedText : root.themeForeground
           style: Text.Raised
-          styleColor: Qt.rgba(0, 0, 0, 0.45)
+          styleColor: Qt.alpha(root.themeBackground, 0.7)
           font.family: root.fontFamily
           font.pixelSize: parent.width
         }

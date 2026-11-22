@@ -185,9 +185,9 @@ Item {
     elide: Text.ElideRight
     textFormat: Text.PlainText
     text: tile.info.appName || tile.info.title
-    color: "#ffffff"
+    color: ov.themeForeground
     style: Text.Raised
-    styleColor: Qt.rgba(0, 0, 0, 0.6)
+    styleColor: Qt.alpha(ov.themeBackground, 0.7)
     font.family: ov.fontFamily
     font.pixelSize: Math.round(Style.font.body * 1.2)
     font.bold: true

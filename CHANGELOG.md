@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+- The background is tinted with the theme's own colour instead of black, so
+  you can tell a light theme from a dark one; the text on it uses the theme's
+  text colour.
+
 ## 1.0.1
 
 - Setting up the shortcut and swipes no longer leaves a "config error" entry

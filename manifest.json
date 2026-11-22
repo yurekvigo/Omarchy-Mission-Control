@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.yurekvigo.mission-control",
   "name": "Omarchy Mission Control",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Yurek Vigo",
   "description": "Mac-style overview of every workspace with live window pictures; drag a window onto another workspace to move it, or onto another window to swap (four-finger swipe up or Super + D)",
   "kinds": [
