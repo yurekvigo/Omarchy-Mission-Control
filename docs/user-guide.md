@@ -122,11 +122,14 @@ What it installs and does:
 - It keeps only swipes made with three or more fingers and passes on three
   things: a swipe started, it moved this far, it ended. Key presses are never
   read out or passed on.
+- Only the account that installed it can connect. Other accounts on the same
+  computer are turned away, so on a shared computer each person who wants
+  smooth swipes would need to be the one who installs it.
 - systemd locks it down: no access to your home folder, a read-only system,
   no extra privileges.
 
-Switching Smooth Swipes off removes the service, and removes the package too
-if Mission Control installed it.
+Switching Smooth Swipes off removes the service, and removes `libinput-tools`
+too if Mission Control installed it. No other package is ever touched.
 
 ## Themes
 
@@ -134,7 +137,9 @@ Mission Control uses your theme's menu colours and follows theme changes.
 Windows on workspaces you are not looking at don't redraw by themselves, so
 shortly after a theme change Mission Control quickly visits each workspace
 behind a still picture of your screen. The screen holds still for under a
-second, and the cards then show the new colours.
+second, and the keyboard and mouse are held for that moment so nothing you
+type or click can land on another workspace. The cards then show the new
+colours.
 
 ## Taking a screenshot of Mission Control
 

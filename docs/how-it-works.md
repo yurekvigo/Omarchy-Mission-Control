@@ -52,7 +52,9 @@ rebuilding them.
 listens on `/run/omarchy-mission-control/swipe.sock`. While a client is
 connected it runs `libinput debug-events`, keeps `GESTURE_SWIPE_*` lines with
 three or more fingers, and writes `b <fingers>`, `u <dx> <dy>` and `e` lines.
-When the last client disconnects it stops libinput.
+When the last client disconnects it stops libinput. It checks each
+connection's account (`SO_PEERCRED`) and accepts only `ALLOWED_UID`, which
+`install.sh` writes into the unit.
 
 The overview connects on every open (not with a property binding: a failed
 attempt would break the binding for good).
@@ -93,3 +95,12 @@ qs log -p /usr/share/omarchy/shell -t 200 | grep -i mission
 ```
 
 `rescanPlugins` alone keeps the old code running; restart the shell.
+
+## The theme refresh
+
+Windows on other workspaces don't redraw while hidden. After a theme change,
+with the overview closed, the plugin shows a one-frame screenshot of the output
+on an Overlay layer that holds the keyboard exclusively and swallows pointer
+input, focuses each busy workspace for a moment behind it, focuses the
+original workspace again, and only then removes the layer. A guard does the
+same hand-back after four seconds if anything stalls.

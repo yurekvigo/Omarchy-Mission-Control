@@ -227,8 +227,9 @@ Item {
   //
   // Normally this happens right after the theme change, before you open the
   // overview: once the apps on screen have re-coloured, a still picture of
-  // the screen is laid over everything (clicks pass through), the workspaces
-  // are visited behind it, and the picture goes away. If the overview is
+  // the screen is laid over everything (it holds the keyboard and the pointer
+  // meanwhile), the workspaces are visited behind it, and the picture goes
+  // away. If the overview is
   // opened before that, it does the visiting itself.
   property bool picturesStale: false
   onBackgroundChanged: themeChanged()
@@ -261,8 +262,19 @@ Item {
     frozen = true        // captures a fresh still picture; shown once it's ready
     freezeGuard.restart()
   }
-  // Never leave the screen frozen, whatever happens.
-  Timer { id: freezeGuard; interval: 4000; onTriggered: root.frozen = false }
+  // Never leave the screen frozen, whatever happens: stop visiting, go back
+  // to the workspace it started on, and only then let input through again.
+  Timer {
+    id: freezeGuard
+    interval: 4000
+    onTriggered: {
+      if (!root.frozen) return
+      sweepStep.stop()
+      root.sweepList = []
+      if (root.sweepBack > 0) Hyprland.dispatch('hl.dsp.focus({ workspace = "' + root.sweepBack + '" })')
+      sweepDone.restart()
+    }
+  }
 
   property var sweepList: []
   property int sweepBack: 0
@@ -309,9 +321,20 @@ Item {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "omarchy-mission-control-freeze"
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    mask: Region {}          // clicks and the pointer pass through
+    // It holds the keyboard and the pointer while it is up. The workspaces
+    // behind it really change for a moment, so nothing typed or clicked may
+    // reach them: input comes back only once you are on your own workspace
+    // again and the picture is gone.
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     onVisibleChanged: if (visible) root.refreshPictures()
+
+    MouseArea {
+      anchors.fill: parent
+      acceptedButtons: Qt.AllButtons
+      hoverEnabled: true
+      onWheel: function(w) { w.accepted = true }
+    }
+    Item { anchors.fill: parent; focus: true; Keys.onPressed: function(e) { e.accepted = true } }
 
     ScreencopyView {
       id: freezeShot

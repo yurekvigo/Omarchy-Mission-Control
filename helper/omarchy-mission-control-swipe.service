@@ -3,6 +3,8 @@ Description=Swipe helper for Omarchy Mission Control (three/four-finger swipe mo
 
 [Service]
 ExecStart=/usr/local/bin/omarchy-mission-control-swipe
+# The only account that may connect to the helper (install.sh fills this in).
+Environment=ALLOWED_UID=@UID@
 Restart=always
 RestartSec=2
 RuntimeDirectory=omarchy-mission-control

@@ -86,11 +86,13 @@ That installs a small system service (it asks for your password):
 - It reads the touchpad **only while Mission Control is open**, keeps only
   swipes made with three or more fingers, and passes on nothing but "started,
   moved this far, ended". Key presses are never read out or passed on.
+- Only the account that installed it can connect to it. Other accounts on the
+  same computer are turned away.
 - It is locked down with systemd (no access to your files, read-only system,
   no extra privileges).
 
-Switching Smooth Swipes off removes the service and the package again (if this
-plugin installed it).
+Switching Smooth Swipes off removes the service, and removes `libinput-tools`
+too if this plugin installed it. No other package is ever touched.
 
 ## Remove
 

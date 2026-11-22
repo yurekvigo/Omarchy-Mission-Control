@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.4
+
+Security fixes from the marketplace review:
+
+- The theme refresh now holds the keyboard and the pointer while it visits
+  other workspaces behind its still picture, so nothing typed or clicked in
+  that moment can reach another application.
+- The swipe helper's installer no longer compares package lists. It records
+  only whether it installed `libinput-tools`, and removal passes only that one
+  package name to pacman.
+- The swipe helper accepts connections only from the account that installed
+  it.
+
 ## 1.0.3
 
 - The large windows are bigger and sit next to each other as a centred

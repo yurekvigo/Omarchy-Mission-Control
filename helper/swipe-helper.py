@@ -7,21 +7,38 @@ Mission Control is open (connected to the socket), this runs `libinput
 debug-events` (as root, from the omarchy-mission-control-swipe system service),
 keeps only swipe events with three or more fingers and passes on nothing else:
 lines "b <fingers>", "u <dx> <dy>" and "e" on the socket
-/run/omarchy-mission-control/swipe.sock, which any local user may read. Key
-presses are never relayed (libinput hides key codes by default, and every line
-that isn't a swipe is dropped). It reads no input at all while Mission Control
-is closed.
+/run/omarchy-mission-control/swipe.sock. Only the account that installed the
+helper (ALLOWED_UID, set in the service unit by install.sh) may connect; every
+other local account is turned away. Key presses are never relayed (libinput
+hides key codes by default, and every line that isn't a swipe is dropped). It
+reads no input at all while Mission Control is closed.
 """
 import os
 import re
 import selectors
 import socket
+import struct
 import subprocess
 import sys
 
 SOCK_DIR = "/run/omarchy-mission-control"
 SOCK_PATH = SOCK_DIR + "/swipe.sock"
 MIN_FINGERS = 3
+
+
+def allowed_uid():
+    """The one account that may listen, or None (then nobody may)."""
+    try:
+        uid = int(os.environ.get("ALLOWED_UID", ""))
+    except ValueError:
+        return None
+    return uid if uid > 0 else None
+
+
+def peer_uid(conn):
+    """The account on the other end of a Unix socket connection."""
+    creds = conn.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, struct.calcsize("3i"))
+    return struct.unpack("3i", creds)[1]
 
 # " event8   GESTURE_SWIPE_UPDATE         +0.049s\t3 -5.27/ 0.29 (-5.27/ 0.29 unaccelerated)"
 # " event8   GESTURE_SWIPE_UPDATE      2  +0.056s\t3 -71.58/13.67 (...)"  (repeats are counted)
@@ -45,6 +62,7 @@ def main():
     sel = selectors.DefaultSelector()
     sel.register(server, selectors.EVENT_READ, "accept")
     clients = []
+    owner = allowed_uid()
     state = {"proc": None, "fd": None, "pending": b"", "active": False}
 
     # libinput only runs while someone is listening (Mission Control is open),
@@ -100,6 +118,14 @@ def main():
                 try:
                     conn, _ = server.accept()
                 except OSError:
+                    continue
+                # Only the installing account gets swipe movement.
+                try:
+                    ok = owner is not None and peer_uid(conn) == owner
+                except OSError:
+                    ok = False
+                if not ok:
+                    conn.close()
                     continue
                 conn.settimeout(0.2)
                 clients.append(conn)
