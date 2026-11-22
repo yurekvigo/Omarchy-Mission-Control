@@ -4,6 +4,8 @@ A Mac-style Mission Control for [Omarchy](https://omarchy.org): see every
 workspace at a glance, with live pictures of its windows, and move, swap and
 arrange them with the mouse or the touchpad.
 
+![Omarchy Mission Control](preview.png)
+
 It is a plugin for omarchy-shell (Omarchy 4 and later). Nothing is compiled
 against Hyprland, so Omarchy and Hyprland updates don't break it.
 
