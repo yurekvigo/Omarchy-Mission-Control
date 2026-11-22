@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- The large windows are bigger and sit next to each other as a centred
+  group, instead of being spread over equal slices of the screen.
+
 ## 1.0.2
 
 - The background is tinted with the theme's own colour instead of black, so

@@ -1503,27 +1503,55 @@ Item {
       // row of workspaces (Mac-style), each with its app's name under it.
       Item {
         id: bigArea
-        x: parent.width * 0.06
-        y: cardFlick.y + cardFlick.height + Style.space(30)
-        width: parent.width * 0.88
-        height: parent.height - y - Style.space(50)
+        x: parent.width * 0.04
+        y: cardFlick.y + cardFlick.height + Style.space(18)
+        width: parent.width * 0.92
+        height: parent.height - y - Style.space(44)
 
         readonly property int n: root.currentWindows.length
         readonly property int cols: Math.max(1, Math.ceil(Math.sqrt(n * width / Math.max(1, height) / 1.6)))
         readonly property int rows: Math.max(1, Math.ceil(n / cols))
         readonly property real cellW: width / cols
         readonly property real cellH: height / rows
-        readonly property real pad: Style.space(24)
+        readonly property real pad: Style.space(10)
+        // Windows in a row sit next to each other with this gap, the row
+        // centred as a group (they are not spread over equal cells).
+        readonly property real gap: Style.space(28)
+        readonly property real titleH: Math.round(Style.font.body * 1.2) + Style.space(14)
 
-        // The cell (spot) of the large view at (x, y), by the real order, or -1.
+        // Size of the picture of window `address`: as large as its cell allows.
+        function frameSize(address) {
+          var info = root.bigInfo[address]
+          var aspect = info && info.size && info.size[0] > 0 ? info.size[1] / info.size[0] : overlay.aspect
+          var w = Math.max(1, Math.min(cellW - pad * 2, (cellH - pad * 2 - titleH) / aspect))
+          return { w: w, h: w * aspect }
+        }
+        // Where spot i of the real order is: left edge, width, centre.
+        function slotRect(i) {
+          var row = Math.floor(i / cols)
+          var first = row * cols
+          var last = Math.min(n, first + cols) - 1
+          var total = 0, before = 0
+          for (var j = first; j <= last; j++) {
+            var w = frameSize(root.bigOrder[j]).w
+            if (j < i) before += w + gap
+            total += w + (j > first ? gap : 0)
+          }
+          var mine = frameSize(root.bigOrder[i]).w
+          var x = (width - total) / 2 + before
+          return { x: x, w: mine, cx: x + mine / 2, cy: row * cellH + cellH / 2 }
+        }
+        // The spot of the large view at (x, y), by the real order, or -1.
         function slotAt(x, y) {
           var row = Math.floor(y / cellH)
           if (row < 0 || row >= rows) return -1
-          var inRow = row === rows - 1 ? n - row * cols : cols
-          var left = (width - inRow * cellW) / 2
-          var col = Math.floor((x - left) / cellW)
-          if (col < 0 || col >= inRow) return -1
-          return row * cols + col
+          var first = row * cols
+          var last = Math.min(n, first + cols) - 1
+          for (var i = first; i <= last; i++) {
+            var r = slotRect(i)
+            if (x >= r.x - gap / 2 && x <= r.x + r.w + gap / 2) return i
+          }
+          return -1
         }
         // Lit while a window from another workspace is dragged over it:
         // dropping it here brings it to the workspace you're on.
@@ -1561,15 +1589,10 @@ Item {
             required property string modelData   // the window's address
             readonly property var winInfo: root.bigInfo[modelData]
             readonly property int index: Math.max(0, root.bigOrder.indexOf(root.previewAddr(modelData)))
-            readonly property int row: Math.floor(index / bigArea.cols)
-            readonly property int col: index % bigArea.cols
-            // Items in a short last row are centred.
-            readonly property int inRow: row === bigArea.rows - 1 ? bigArea.n - row * bigArea.cols : bigArea.cols
-            readonly property real winAspect: winInfo && winInfo.size && winInfo.size[0] > 0
-              ? winInfo.size[1] / winInfo.size[0] : overlay.aspect
-            readonly property real maxW: bigArea.cellW - bigArea.pad * 2
-            readonly property real maxH: bigArea.cellH - bigArea.pad * 2 - titleHeight
-            readonly property real frameW: Math.min(maxW, maxH / winAspect)
+            // Its own size, at the spot it takes (its partner's during a
+            // swap preview).
+            readonly property var frame: bigArea.frameSize(modelData)
+            readonly property var slot: bigArea.slotRect(index)
 
             ov: root
             info: winInfo || ({ address: modelData, workspaceId: -1, toplevel: null, title: "", icon: "", appName: "" })
@@ -1581,10 +1604,10 @@ Item {
             // changes size grows or shrinks evenly from its middle.
             property bool settled: false
             Component.onCompleted: Qt.callLater(function() { big.settled = true })
-            property real cx: (bigArea.width - inRow * bigArea.cellW) / 2 + col * bigArea.cellW + bigArea.cellW / 2
-            property real cy: row * bigArea.cellH + bigArea.cellH / 2
-            property real ww: frameW
-            property real hh: frameW * winAspect + titleHeight
+            property real cx: slot.cx
+            property real cy: slot.cy
+            property real ww: frame.w
+            property real hh: frame.h + titleHeight
             Behavior on cx { enabled: big.settled; NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
             Behavior on cy { enabled: big.settled; NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
             Behavior on ww { enabled: big.settled; NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
