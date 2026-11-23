@@ -303,7 +303,21 @@ Item {
 
   property var sweepList: []
   property int sweepBack: 0
-  Timer { id: sweepStart; interval: 350; onTriggered: root.refreshPictures() }
+  // Opened with stale pictures: the visit happens behind the overview, but
+  // its backdrop is the blurred desktop, so the visited workspace would show
+  // through it for a moment. Once the overview has settled, the same still
+  // picture is laid over it for the visit (blurred and tinted, a pause of the
+  // wallpaper behind it is hard to see; a window flashing through is not).
+  Timer {
+    id: sweepStart
+    interval: 350
+    onTriggered: {
+      if (!root.opened) return
+      if (root.frozen) return
+      root.frozen = true          // its layer, once shown, starts the visit
+      freezeGuard.restart()
+    }
+  }
   function refreshPictures() {
     if (!opened && !frozen) return
     picturesStale = false

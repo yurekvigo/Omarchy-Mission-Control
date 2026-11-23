@@ -7,6 +7,10 @@
   pictures are not refreshed behind a still picture of the screen; the
   overview refreshes them itself the next time it is opened. With a still
   wallpaper, or without `owe`, nothing changes.
+- When the overview refreshes the pictures itself (opened with stale
+  pictures), it now does so behind the same still picture, laid over the
+  settled overview: the workspace being visited no longer shows through the
+  blurred backdrop for a moment.
 
 ## 1.0.5
 

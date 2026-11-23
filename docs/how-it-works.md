@@ -111,5 +111,10 @@ Before freezing, the plugin asks Omarchy's wallpaper engine (`owe status`).
 If a video wallpaper is playing (`loaded_kind` is `video` and it isn't
 paused), the still picture would visibly stop it, so the plugin doesn't
 freeze: the pictures stay marked stale and the overview visits the
-workspaces itself, behind its own screen, the next time it is opened. Without
-`owe`, or with a still wallpaper, it freezes as described.
+workspaces itself the next time it is opened. Without `owe`, or with a still
+wallpaper, it freezes as described.
+
+The overview's backdrop is the blurred desktop, so a workspace visited behind
+it would show through. When the overview refreshes the pictures itself, it
+waits 0.35 s for its opening to settle and then lays the same still picture
+over itself for the visit.
