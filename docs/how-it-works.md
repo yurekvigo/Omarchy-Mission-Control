@@ -114,6 +114,7 @@ freeze: the pictures stay marked stale and the overview visits the
 workspaces itself the next time it is opened. Without `owe`, or with a still
 wallpaper, it freezes as described.
 
-The overview's backdrop blurs only the wallpaper (`xray = true` in its layer
-rule), never windows, so a workspace visited behind it can't show through and
-no still picture is needed while it is open.
+The overview's backdrop is the blurred desktop, so a workspace visited behind
+it would show through. When the overview refreshes the pictures itself, it
+waits 0.35 s for its opening to settle and then lays the same still picture
+over itself for the visit.
