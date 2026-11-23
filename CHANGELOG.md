@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.6
+
+- An animated wallpaper no longer stops for a moment after a theme change.
+  While a video wallpaper is playing (Omarchy's `owe`), the workspace
+  pictures are not refreshed behind a still picture of the screen; the
+  overview refreshes them itself the next time it is opened. With a still
+  wallpaper, or without `owe`, nothing changes.
+
 ## 1.0.5
 
 - No more flicker after a theme change: the still picture laid over the

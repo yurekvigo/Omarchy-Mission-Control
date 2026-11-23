@@ -103,4 +103,13 @@ with the overview closed, the plugin shows a one-frame screenshot of the output
 on an Overlay layer that holds the keyboard exclusively and swallows pointer
 input, focuses each busy workspace for a moment behind it, focuses the
 original workspace again, and only then removes the layer. A guard does the
-same hand-back after four seconds if anything stalls.
+same hand-back after four seconds if anything stalls. The layer is shown
+without a fade (a layer rule with `no_anim`, set with the other rules after
+every reload), so the visited workspaces never show through.
+
+Before freezing, the plugin asks Omarchy's wallpaper engine (`owe status`).
+If a video wallpaper is playing (`loaded_kind` is `video` and it isn't
+paused), the still picture would visibly stop it, so the plugin doesn't
+freeze: the pictures stay marked stale and the overview visits the
+workspaces itself, behind its own screen, the next time it is opened. Without
+`owe`, or with a still wallpaper, it freezes as described.

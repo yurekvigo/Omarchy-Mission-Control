@@ -233,8 +233,8 @@ Item {
   // overview: once the apps on screen have re-coloured, a still picture of
   // the screen is laid over everything (it holds the keyboard and the pointer
   // meanwhile), the workspaces are visited behind it, and the picture goes
-  // away. If the overview is
-  // opened before that, it does the visiting itself.
+  // away. If the overview is opened before that, or an animated wallpaper is
+  // playing (a still picture would stop it), it does the visiting itself.
   property bool picturesStale: false
   onBackgroundChanged: themeChanged()
   onForegroundChanged: themeChanged()
@@ -263,8 +263,29 @@ Item {
   property bool frozen: false
   function freezeAndRefresh() {
     if (busyWorkspaces().length === 0) { picturesStale = false; return }
-    frozen = true        // captures a fresh still picture; shown once it's ready
-    freezeGuard.restart()
+    if (wallpaperCheck.running || frozen) return
+    wallpaperCheck.running = true   // then freezes, unless a video is playing
+  }
+  // A still picture over an animated wallpaper (Omarchy's OWE) makes the
+  // video stop for a moment. While one plays, the pictures stay stale instead
+  // and the overview refreshes them itself when it is next opened, behind its
+  // own screen. Without OWE, or with a still wallpaper, it freezes as before.
+  Process {
+    id: wallpaperCheck
+    command: ["owe", "status"]
+    stdout: StdioCollector { id: wallpaperOut }
+    onExited: function(code) {
+      var playing = false
+      if (code === 0) {
+        try {
+          var st = JSON.parse(String(wallpaperOut.text || "{}"))
+          playing = st.loaded_kind === "video" && st.paused !== true
+        } catch (e) {}
+      }
+      if (playing || root.opened || !root.picturesStale) return
+      root.frozen = true        // captures a fresh still picture; shown once it's ready
+      freezeGuard.restart()
+    }
   }
   // Never leave the screen frozen, whatever happens: stop visiting, go back
   // to the workspace it started on, and only then let input through again.
@@ -424,7 +445,7 @@ Item {
     // done by itself after a theme change).
     function refresh(): void { root.refreshPictures() }
     // What happens right after a theme change, without changing it (testing).
-    function themeRefresh(): void { root.freezeAndRefresh() }
+    function themeRefresh(): void { root.picturesStale = true; root.freezeAndRefresh() }
     // Same as one mouse-wheel notch outside the cards (testing): -1 or 1.
     function step(dir: int): void { root.stepWorkspace(dir) }
     // Throw the row like the end of a three-finger swipe does (testing).

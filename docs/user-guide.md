@@ -141,6 +141,10 @@ second, and the keyboard and mouse are held for that moment so nothing you
 type or click can land on another workspace. The cards then show the new
 colours.
 
+If an animated wallpaper is playing, Mission Control skips this, because the
+still picture would make the video stop for a moment. Instead it updates the
+cards itself in the first moment after you next open it.
+
 ## Taking a screenshot of Mission Control
 
 Press your normal screenshot key (**Print** on Omarchy) while it is open. If
