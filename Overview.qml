@@ -130,7 +130,7 @@ Item {
            + 'pcall(hl.gesture, { fingers = 4, direction = "down", action = "unset" }); '
            + 'hl.gesture({ fingers = 4, direction = "up", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' open") end }); '
            + 'hl.gesture({ fingers = 4, direction = "down", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' close") end }); '
-    cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control$" }, blur = true, ignore_alpha = 0.3 }); '
+    cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control$" }, blur = true, ignore_alpha = 0.3, xray = true }); '
     // The theme refresh's still picture must cover the screen at once: faded
     // in, the workspaces it visits behind it showed through for a moment.
     cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control-freeze$" }, no_anim = true, animation = "none" })'
@@ -303,21 +303,10 @@ Item {
 
   property var sweepList: []
   property int sweepBack: 0
-  // Opened with stale pictures: the visit happens behind the overview, but
-  // its backdrop is the blurred desktop, so the visited workspace would show
-  // through it for a moment. Once the overview has settled, the same still
-  // picture is laid over it for the visit (blurred and tinted, a pause of the
-  // wallpaper behind it is hard to see; a window flashing through is not).
-  Timer {
-    id: sweepStart
-    interval: 350
-    onTriggered: {
-      if (!root.opened) return
-      if (root.frozen) return
-      root.frozen = true          // its layer, once shown, starts the visit
-      freezeGuard.restart()
-    }
-  }
+  // Opened with stale pictures: the visit happens behind the overview. Its
+  // backdrop blurs only the wallpaper (x-ray), never windows, so the visited
+  // workspace can't show through and an animated wallpaper keeps playing.
+  Timer { id: sweepStart; interval: 350; onTriggered: root.refreshPictures() }
   function refreshPictures() {
     if (!opened && !frozen) return
     picturesStale = false
