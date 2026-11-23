@@ -113,7 +113,8 @@ Item {
   // ------------------------------------------------------------ shortcuts
   // While the plugin is on, it registers its own keyboard shortcut and
   // four-finger swipe up/down with Hyprland (nothing is written to the
-  // Hyprland config), and blurs what is behind the overview. Hyprland forgets
+  // Hyprland config), blurs what is behind the overview and shows the theme
+  // refresh's still picture without a fade. Hyprland forgets
   // these whenever its config is reloaded, so they are applied again after
   // every reload. settings.json: "shortcut" (default "SUPER + D"; "" for
   // none) and "gestures" (default true).
@@ -129,7 +130,10 @@ Item {
            + 'pcall(hl.gesture, { fingers = 4, direction = "down", action = "unset" }); '
            + 'hl.gesture({ fingers = 4, direction = "up", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' open") end }); '
            + 'hl.gesture({ fingers = 4, direction = "down", action = function() hl.exec_cmd("omarchy-shell ' + pluginId + ' close") end }); '
-    cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control$" }, blur = true, ignore_alpha = 0.3 })'
+    cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control$" }, blur = true, ignore_alpha = 0.3 }); '
+    // The theme refresh's still picture must cover the screen at once: faded
+    // in, the workspaces it visits behind it showed through for a moment.
+    cmd += 'hl.layer_rule({ match = { namespace = "^omarchy-mission-control-freeze$" }, no_anim = true, animation = "none" })'
     hyprEval(cmd)
   }
   // Runs Lua in Hyprland. Clearing a swipe that isn't set makes Hyprland note

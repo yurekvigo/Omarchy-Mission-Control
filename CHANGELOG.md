@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.5
+
+- No more flicker after a theme change: the still picture laid over the
+  screen while the workspace pictures are refreshed now appears at once
+  instead of fading in, so the workspaces visited behind it no longer show
+  through for a moment.
+
 ## 1.0.4
 
 Security fixes from the marketplace review:
