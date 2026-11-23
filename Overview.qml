@@ -295,6 +295,7 @@ Item {
     onTriggered: {
       if (!root.frozen) return
       sweepStep.stop()
+      firstVisit.stop()
       root.sweepList = []
       if (root.sweepBack > 0) Hyprland.dispatch('hl.dsp.focus({ workspace = "' + root.sweepBack + '" })')
       sweepDone.restart()
@@ -326,25 +327,31 @@ Item {
     sweepBack = liveWorkspace
     pinnedWorkspace = liveWorkspace
     sweepList = ids
-    sweepStep.restart()
+    firstVisit.restart()
+  }
+  // The still picture reaches the screen a few frames after it is ready
+  // here; visiting earlier lets the other workspace flash.
+  Timer { id: firstVisit; interval: 60; onTriggered: { root.sweepNext(); sweepStep.restart() } }
+  // Each workspace gets 0.11 s to redraw; then back to where you were.
+  function sweepNext() {
+    var l = sweepList
+    if (l.length === 0) {
+      sweepStep.stop()
+      firstVisit.stop()
+      Hyprland.dispatch('hl.dsp.focus({ workspace = "' + sweepBack + '" })')
+      sweepDone.restart()
+      return
+    }
+    sweepList = l.slice(1)
+    Hyprland.dispatch('hl.dsp.focus({ workspace = "' + l[0] + '" })')
   }
   Timer {
     id: sweepStep
     interval: 110
     repeat: true
-    onTriggered: {
-      var l = root.sweepList
-      if (l.length === 0) {
-        stop()
-        Hyprland.dispatch('hl.dsp.focus({ workspace = "' + root.sweepBack + '" })')
-        sweepDone.restart()
-        return
-      }
-      root.sweepList = l.slice(1)
-      Hyprland.dispatch('hl.dsp.focus({ workspace = "' + l[0] + '" })')
-    }
+    onTriggered: root.sweepNext()
   }
-  Timer { id: sweepDone; interval: 200; onTriggered: { root.pinnedWorkspace = 0; root.frozen = false } }
+  Timer { id: sweepDone; interval: 100; onTriggered: { root.pinnedWorkspace = 0; root.frozen = false } }
 
   // The still picture of the screen used while visiting after a theme change.
   PanelWindow {

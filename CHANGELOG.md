@@ -11,6 +11,10 @@
   pictures), it now does so behind the same still picture, laid over the
   settled overview: the workspace being visited no longer shows through the
   blurred backdrop for a moment.
+- The refresh is quicker: the first workspace is visited 0.06 s after the
+  still picture is on screen (was 0.11 s) and the picture goes 0.1 s after
+  coming back (was 0.2 s), so the screen holds still for about a quarter of
+  a second.
 
 ## 1.0.5
 
